@@ -1,9 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
-import { resolve } from "path";
-import { rejects } from "assert";
-import { error } from "console";
 
 const storage = new Storage();
 
@@ -82,7 +79,7 @@ export async function uploadProcessedVideo(fileName: string) {
  * @returns A promise that resolves when the file has been deleted.
  */
 export function deleteRawVideo(fileName: string): Promise<void> {
-    return deleteFile(`${localProcessedVideoPath}/${fileName}`);
+    return deleteFile(`${localRawVideoPath}/${fileName}`);
 }
 
 /**

@@ -1,5 +1,4 @@
 import express from 'express';
-import ffmpeg from 'fluent-ffmpeg';
 import {
     downloadRawVideo,
     uploadProcessedVideo,
