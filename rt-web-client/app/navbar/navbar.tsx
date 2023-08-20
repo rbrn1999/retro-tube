@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./navbar.module.css"
 import Link from "next/link";
 import SignIn from "./sign-in";
+import Upload from "./upload";
 import { onAuthStateChangedHelper } from "../utilities/firebase/firebase";
 import { useEffect, useState} from "react";
 import { User } from "firebase/auth";
@@ -28,6 +29,9 @@ function NavBar() {
                     src="/RetroTube-logo.svg" alt="RetroTube logo"/>
                 </span>
             </Link>
+            {
+                user && <Upload />
+            }
             <SignIn user={user} />
         </nav>
     );
