@@ -10,10 +10,12 @@ import  {
 
 // Your web app's Firebase configuration
 import { firebaseConfig } from "./firebaseConfig"
+import { getFunctions } from "firebase/functions";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+export const functions = getFunctions(app);
 
 /**
  * Sign in the user with a Google popup
