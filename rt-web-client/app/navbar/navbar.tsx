@@ -28,6 +28,9 @@ function NavBar() {
                     src="/RetroTube-logo.svg" alt="RetroTube logo"/>
                 </span>
             </Link>
+            { 
+               user && <Upload />
+            }
             <SignIn user={user} />
         </nav>
     );
