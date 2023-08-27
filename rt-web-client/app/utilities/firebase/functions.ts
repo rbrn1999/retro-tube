@@ -1,19 +1,11 @@
 import {httpsCallable} from "firebase/functions";
 import {functions} from "./firebase"
+import Video from "@/app/interfaces/Video";
 
 
 const generateUploadUrl = httpsCallable(functions, 'generateUploadUrl');
 const getVideosFunction = httpsCallable(functions, 'getVideos');
-
-// TODO: refactor to share code with `video-processing-service/src/firestore.ts`
-interface Video {
-    id?: string,
-    uid?: string,
-    filename?: string,
-    status?: 'processing' | 'processed',
-    title?: string,
-    description?: string  
-  }
+const getVideoFunction = httpsCallable(functions, 'getVideo');
 
 export async function uploadVideo(file: File) {
     const response: any = await generateUploadUrl({
@@ -35,4 +27,9 @@ export async function uploadVideo(file: File) {
 export async function getVideos() {
     const response: any = await getVideosFunction();
     return response.data as Video[];
-  }
+}
+
+export async function getVideo(id: string) {
+    const response: any = await getVideoFunction({id: id})
+    return response.data as Video;
+}

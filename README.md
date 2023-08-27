@@ -93,6 +93,7 @@ firebase deploy --only functions:<FUNCTION_NAME>
 ## Reference
 Firebase CLI - https://firebase.google.com/docs/functions/get-started?authuser=0&gen=2nd#set-up-your-environment-and-the-firebase-cli \
 Firebase Admin SDK - https://firebase.google.com/docs/admin/setup \
+Firebase Call functions from your app - https://firebase.google.com/docs/functions/callable \
 Signed URLs: https://cloud.google.com/storage/docs/access-control/signed-urls \
 Create Signed URL: https://cloud.google.com/storage/docs/samples/storage-generate-upload-signed-url-v4#storage_generate_upload_signed_url_v4-nodejs
 

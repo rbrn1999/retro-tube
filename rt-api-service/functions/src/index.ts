@@ -57,3 +57,14 @@ export const getVideos = onCall({maxInstances: 1}, async () => {
     await firestore.collection(videoCollectionId).limit(10).get();
   return querySnapshot.docs.map((doc) => doc.data());
 });
+
+export const getVideo = onCall({maxInstances: 1}, async (request) => {
+  const videoId = request.data.id;
+  try {
+    const docRef = firestore.collection(videoCollectionId).doc(videoId);
+    const doc = await docRef.get();
+    return doc.data();
+  } catch (error) {
+    throw new Error(`Fail Fetching the video: ${error}`);
+  }
+});
