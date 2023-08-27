@@ -1,2 +1,101 @@
 # retro-tube
-Full stack YouTube-like experience with a twist, built with GCP.
+Full online video service with account login, video upload, video processing, video watching, built with GCP. \
+Other framework or tool used: ffmpeg, ExpressJS, NextJS.
+
+## Requirements
+Docker \
+Initialized Google Cloud project \
+gcloud cli \
+firebase cli (`npm install -g firebase-tools`)\
+Set the firebase config in `rt-web-client/app/utilities/firebase/firebaseConfig.ts` \
+
+## Deploy
+### Video Processing Service ()
+`video-processing-service/`
+1. Create Artifact Registry repository (with cli or web UI): 
+```
+$ gcloud artifacts repositories create video-processing-repo \
+  --repository-format=docker \
+  --location=<REGION> \
+  --description="Docker repository for video processing service"
+```
+2. Build the Docker image:  `docker build --platform linux/amd-64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/video-processing-repo/video-processing-service .`
+3. Make sure to authenticate Docker with gcloud: `gcloud auth configure-docker <REGION>-docker.pkg.dev`
+4. Push to GCP repo: `docker push <REGION>-docker.pkg.dev/<PROJECT_ID>/video-processing-repo/video-processing-service`
+5. Deploy to Cloud Run, change the config for your needs (with cli or web UI):
+```
+gcloud run deploy video-processing-service --image <REGION>-docker.pkg.dev/PROJECT_ID/video-processing-repo/video-processing-service \
+  --region=<REGION> \
+  --platform managed \
+  --timeout=3600 \
+  --memory=2Gi \
+  --cpu=1 \
+  --min-instances=0 \
+  --max-instances=2 \
+  --ingress=internal
+
+```
+### Cloud Storage Buckets
+1. Create raw videos bucket: \
+`gsutil mb -l <REGION> --pap=enforced gs://<BUCKET_NAME>`
+2. Create raw videos bucket: \
+`gsutil mb -l <REGION> gs://<BUCKET_NAME>`
+
+### Pub/Sub
+Use Pub/Sub to notify video-processing-service a new video is uploaded to our bucket.
+1. Create Pub/Sub topic: \
+`gcloud pubsub topics create <TOPIC_NAME>`
+2. Create Pub/Sub subscription (SERVICE_URL=video-processing-service Cloud Run endpoint URL):
+```
+gcloud pubsub subscriptions create SUBSCRIPTION_NAME \
+  --topic=TOPIC_NAME \
+  --push-endpoint=SERVICE_URL \
+  --ack-deadline=600
+```
+3. Link raw video bucket to this pubsub topic: \
+`gsutil notification create -t <topic-name> -f json -e OBJECT_FINALIZE gs://<BUCKET_NAME>`
+
+### Backend API (Firebase Functions)
+`./rt-api-service/functions`
+1. Deploy functions:
+```
+npm install
+firebase deploy --only functions:<FUNCTION_NAME>
+```
+2. In the `raw video bucket`, grant access to `createUser` firebase function's `service account` (Permissions -> Grant Access -> principles: the `service account`, role: "Cloud Storage > Storage Object Admin")
+
+3. Add `Service Account Token Creator` to `generateUploadUrl` Function. In the GCP IAM page for the same `service account` add another role: `Service Account Token Creator`.
+
+### Web Client (NextJS)
+`./rt-web-client`
+1. Create a Artifact Registry repo (with cli or web UI)
+    ```
+    gcloud artifacts repositories create rt-web-client-repo \
+    --repository-format=docker \
+    --location=<REGION> \
+    --description="Docker repository for the web client"
+    ```
+2. Build the Docker image:  `docker build --platform linux/amd-64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client .`
+3. Push to GCP repo: `docker push <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client`
+4. Deploy to Cloud Run (with cli or web UI)
+    ```
+    gcloud run deploy yt-web-client --image <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client \
+    --region=<REGION> \
+    --platform managed \
+    --timeout=3600 \
+    --memory=2Gi \
+    --cpu=1 \
+    --min-instances=0 \
+    --max-instances=1
+    ```
+5. In Firebase Auth, add the Cloud Run URL of the web-client to authorized domains.
+
+## Reference
+Firebase CLI - https://firebase.google.com/docs/functions/get-started?authuser=0&gen=2nd#set-up-your-environment-and-the-firebase-cli \
+Firebase Admin SDK - https://firebase.google.com/docs/admin/setup \
+Signed URLs: https://cloud.google.com/storage/docs/access-control/signed-urls \
+Create Signed URL: https://cloud.google.com/storage/docs/samples/storage-generate-upload-signed-url-v4#storage_generate_upload_signed_url_v4-nodejs
+
+## Acknowledgement
+This project is based on and inspired by NeedCode's "Full Stack Development" course.
+
