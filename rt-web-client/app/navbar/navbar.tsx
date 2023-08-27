@@ -29,9 +29,9 @@ function NavBar() {
                     src="/RetroTube-logo.svg" alt="RetroTube logo"/>
                 </span>
             </Link>
-            { 
-               user && <Upload />
-            }
+            <div className={styles.filler}/>
+            { user && <Upload /> }
+            { user && <Image className={styles.profileImage} width={20} height={20} alt="profile picture" src={user?.photoURL ?? ""} /> }
             <SignIn user={user} />
         </nav>
     );

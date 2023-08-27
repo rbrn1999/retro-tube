@@ -1,6 +1,21 @@
 .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1em;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+}
+
+.filler {
+  flex: 1  
+}
+
+.profileImage {
+  height: auto;
+  width: 2em;
+  margin: 0 1em 0 1em ;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+  border-radius: 50%;
+}
