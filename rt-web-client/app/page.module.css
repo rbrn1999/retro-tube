@@ -1,3 +1,19 @@
-.thumbnail {
-    margin: 10px;
-  }
+.thumbnailContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.thumbnail a {
+  text-decoration: none;
+}
+
+.thumbnail img {
+  border-radius: 10%;
+}
+
+.thumbnail h4 {
+  margin: auto;
+  color: black;
+  font-weight: normal;
+}
