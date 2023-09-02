@@ -54,7 +54,7 @@ const videoCollectionId = "videos";
 
 export const getVideos = onCall({maxInstances: 1}, async () => {
   const querySnapshot =
-    await firestore.collection(videoCollectionId).limit(10).get();
+  await firestore.collection(videoCollectionId).limit(10).get();
   return querySnapshot.docs.map((doc) => doc.data());
 });
 
@@ -68,3 +68,19 @@ export const getVideo = onCall({maxInstances: 1}, async (request) => {
     throw new Error(`Fail Fetching the video: ${error}`);
   }
 });
+
+export const uploadVideoMetadata =
+  onCall({maxInstances: 1}, async (request) => {
+    const data = request.data;
+    const metadata = {
+      title: data.title,
+      description: data.description,
+    };
+    firestore
+      .collection(videoCollectionId)
+      .doc(data.id)
+      .set(metadata, {merge: true});
+
+    logger.info(`Metadata added Created: ${JSON.stringify(metadata)}`);
+    return;
+  });

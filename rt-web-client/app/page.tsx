@@ -9,9 +9,9 @@ export default async function Home() {
     <main className={styles.thumbnailContainer}>
       {
         videos.filter((video) => video.status === "processed").map((video) => (
-          <div className={styles.thumbnail}>
-            <Link href={`/watch?v=${video.id}`} key={video.id}>
-                <Image src={'/thumbnail.png'} alt='video' width={120} height={80}/>
+          <div className={styles.thumbnail} key={video.id}>
+            <Link href={`/watch?v=${video.id}`}>
+                <Image src={'/thumbnail.png'} alt='video' width={120} height={80} priority={true} />
                 <h4>{video.title}</h4>
             </Link>
           </div>

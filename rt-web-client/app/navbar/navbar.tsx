@@ -26,7 +26,7 @@ function NavBar() {
             <Link href="/">
                 <span className={styles.logoContainer}>
                     <Image width={100} height={18}
-                    src="/RetroTube-logo.svg" alt="RetroTube logo"/>
+                    src="/RetroTube-logo.svg" alt="RetroTube logo" priority={true} />
                 </span>
             </Link>
             <div className={styles.filler}/>
