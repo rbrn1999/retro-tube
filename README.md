@@ -6,11 +6,11 @@ Other framework or tool used: ffmpeg, ExpressJS, NextJS.
 Docker \
 Initialized Google Cloud project \
 gcloud cli \
-firebase cli (`npm install -g firebase-tools`)\
-Set the firebase config in `rt-web-client/app/utilities/firebase/firebaseConfig.ts` \
+firebase cli (`npm install -g firebase-tools`) \
+Set the firebase config in `rt-web-client/app/utilities/firebase/firebaseConfig.ts` 
 
 ## Deploy
-### Video Processing Service ()
+### Video Processing Service
 `video-processing-service/`
 1. Create Artifact Registry repository (with cli or web UI): 
 ```
