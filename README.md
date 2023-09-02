@@ -1,4 +1,4 @@
-# retro-tube
+# RetroTube
 Full online video service with account login, video upload, video processing, video watching, built with GCP. \
 Other framework or tool used: ffmpeg, ExpressJS, NextJS.
 
