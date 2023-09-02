@@ -24,6 +24,7 @@ export interface Video {
   status?: 'processing' | 'processed',
   title?: string,
   description?: string
+  thumbnail?: string
 }
 
 async function getVideo(videoId: string) {

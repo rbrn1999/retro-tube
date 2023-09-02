@@ -3,28 +3,45 @@ import {functions} from "./firebase"
 import Video from "@/app/interfaces/Video";
 
 
-const generateUploadUrl = httpsCallable(functions, 'generateUploadUrl');
+const generateUploadVideoUrl = httpsCallable(functions, 'generateUploadVideoUrl');
+const generateUploadThumbnailUrl = httpsCallable(functions, 'generateUploadThumbnailUrl');
 const getVideosFunction = httpsCallable(functions, 'getVideos');
 const getVideoFunction = httpsCallable(functions, 'getVideo');
 const uploadVideoMetadata = httpsCallable(functions, 'uploadVideoMetadata');
 
-export async function uploadVideo(file: File, title: String, description: String) {
-    const response: any = await generateUploadUrl({
-        fileExtension: file.name.split('.').pop()
+export async function uploadVideo(video: File, thumbnail: File | null, title: String, description: String) {
+    const videoUrlResponse: any = await generateUploadVideoUrl({
+        fileExtension: video.name.split('.').pop()
     });
+    const id = videoUrlResponse?.data?.fileName.split('.')[0];
+    let thumbnailUrlResponse: any = {}
+    if (thumbnail) {
+        thumbnailUrlResponse = await generateUploadThumbnailUrl({id: id, fileExtension: thumbnail.name.split('.').pop()})
+    }
 
     // Upload the file with the signed URL
-    await fetch(response?.data?.url, {
-        method: 'PUT',
-        body: file,
-        headers: {
-            'Content-Type': file.type
-        }
-    });
+    await Promise.all([
+        fetch(videoUrlResponse?.data?.url, {
+            method: 'PUT',
+            body: video,
+            headers: {
+                'Content-Type': video.type
+            }
+        }),
+        thumbnail ? fetch(thumbnailUrlResponse?.data?.url, {
+            method: 'PUT',
+            body: thumbnail,
+            headers: {
+                'Content-Type': thumbnail.type,
+                'x-goog-acl': 'public-read'
+            }
+        }) : Promise.resolve() // solve dummy promise when there's no thumbnail
+    ])
     uploadVideoMetadata({
-        id: response?.data?.fileName.split('.')[0],
+        id: id,
         title: title,
-        description: description
+        description: description,
+        thumbnail: thumbnailUrlResponse?.data?.fileName
     });
     return;
 }

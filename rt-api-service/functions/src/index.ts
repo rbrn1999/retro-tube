@@ -11,6 +11,7 @@ initializeApp();
 const firestore = new Firestore();
 const storage = new Storage();
 const rawVideoBucketName = "retro-tube-raw-videos";
+const thumbnailBucket = "retro-tube-thumbnails";
 
 export const createUser = functions.auth.user().onCreate((user) => {
   const userInfo = {
@@ -24,30 +25,57 @@ export const createUser = functions.auth.user().onCreate((user) => {
   return;
 });
 
-export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
-  if (!request.auth) {
-    throw new functions.https.HttpsError(
-      "failed-precondition",
-      "The function must be called while authenticated"
-    );
-  }
+export const generateUploadVideoUrl =
+  onCall({maxInstances: 1}, async (request) => {
+    if (!request.auth) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "The function must be called while authenticated"
+      );
+    }
 
-  const auth = request.auth;
-  const data = request.data;
-  const bucket = storage.bucket(rawVideoBucketName);
+    const auth = request.auth;
+    const data = request.data;
+    const bucket = storage.bucket(rawVideoBucketName);
 
-  // Generate a unique filename
-  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtension}`;
+    // Generate a unique file name
+    const fileName = `${auth.uid}-${Date.now()}.${data.fileExtension}`;
 
-  // Get a v4 signed URL for uploading file
-  const [url] = await bucket.file(fileName).getSignedUrl({
-    version: "v4",
-    action: "write",
-    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    // Get a v4 signed URL for uploading file
+    const [url] = await bucket.file(fileName).getSignedUrl({
+      version: "v4",
+      action: "write",
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    });
+    return {url, fileName};
   });
-  return {url, fileName};
-});
 
+export const generateUploadThumbnailUrl =
+  onCall({maxInstances: 1}, async (request) => {
+    if (!request.auth) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "The function must be called while authenticated"
+      );
+    }
+
+    const data = request.data;
+    const bucket = storage.bucket(thumbnailBucket);
+
+    // Generate a unique file name
+    const fileName = `${data.id}.${data.fileExtension}`;
+
+    // Get a v4 signed URL for uploading file
+    const [url] = await bucket.file(fileName).getSignedUrl({
+      version: "v4",
+      action: "write",
+      expires: Date.now() + 2 * 60 * 1000, // 2 minutes
+      extensionHeaders: {
+        "x-goog-acl": "public-read",
+      },
+    });
+    return {url, fileName};
+  });
 
 // TODO: refactor to share code with `video-processing-service/src/firestore.ts`
 const videoCollectionId = "videos";
@@ -75,12 +103,13 @@ export const uploadVideoMetadata =
     const metadata = {
       title: data.title,
       description: data.description,
+      thumbnail: data.thumbnail,
     };
     firestore
       .collection(videoCollectionId)
       .doc(data.id)
       .set(metadata, {merge: true});
 
-    logger.info(`Metadata added Created: ${JSON.stringify(metadata)}`);
+    logger.info(`Metadata added: ${JSON.stringify(metadata)}`);
     return;
   });

@@ -10,6 +10,7 @@
 
 .thumbnail img {
   border-radius: 10%;
+  object-fit: cover;
 }
 
 .thumbnail h4 {

@@ -10,7 +10,8 @@ export default function UploadForm() {
     const router = useRouter();
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [file, setFile] = useState<File | null>(null);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState<boolean>(false);
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -21,24 +22,31 @@ export default function UploadForm() {
         setDescription(event.target.value);
     };
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleVideoFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.item(0);
         if (selectedFile) {
-            setFile(selectedFile);
+            setVideoFile(selectedFile);
+        }
+    };
+
+    const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.item(0);
+        if (selectedFile) {
+            setThumbnailFile(selectedFile);
         }
     };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
-        if (!file) {
-            alert(`Didn't found file, try refreshing and choose the video again.`);
+        if (!videoFile) {
+            alert(`Didn't found video file, try refreshing and choose the video again.`);
             return;
         }
         try {
             setUploading(true);
-            await uploadVideo(file, title, description);
-            alert(`video upload successfully!`);
+            await uploadVideo(videoFile, thumbnailFile, title, description);
+            alert(`video uploaded successfully!`);
         } catch (error) {
             alert(`video upload failed: ${error}`);
         }
@@ -65,12 +73,11 @@ export default function UploadForm() {
                 />
             </div>
             <div>
-                <label htmlFor="description">Description:</label> <br />
+                <label htmlFor="description">Description:</label> <br/>
                 <textarea
                     id="description"
                     value={description}
                     onChange={handleDescriptionChange}
-                    required
                     className={styles.input}
                 />
             </div>
@@ -79,9 +86,19 @@ export default function UploadForm() {
                 <input
                     type="file"
                     id="file"
-                    onChange={handleFileChange}
+                    onChange={handleVideoFileChange}
                     accept="video/*"
                     required
+                    className={styles.input}
+                />
+            </div>
+            <div>
+                <label htmlFor="file">Upload Thumbnail(optional):</label>
+                <input
+                    type="file"
+                    id="file"
+                    onChange={handleImageFileChange}
+                    accept="image/*"
                     className={styles.input}
                 />
             </div>
