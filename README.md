@@ -19,7 +19,7 @@ $ gcloud artifacts repositories create video-processing-repo \
   --location=<REGION> \
   --description="Docker repository for video processing service"
 ```
-2. Build the Docker image:  `docker build --platform linux/amd-64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/video-processing-repo/video-processing-service .`
+2. Build the Docker image:  `docker build --platform linux/amd64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/video-processing-repo/video-processing-service .`
 3. Make sure to authenticate Docker with gcloud: `gcloud auth configure-docker <REGION>-docker.pkg.dev`
 4. Push to GCP repo: `docker push <REGION>-docker.pkg.dev/<PROJECT_ID>/video-processing-repo/video-processing-service`
 5. Deploy to Cloud Run, change the config for your needs (with cli or web UI):
@@ -78,11 +78,11 @@ firebase deploy --only functions:<FUNCTION_NAME>
     --location=<REGION> \
     --description="Docker repository for the web client"
     ```
-3. Build the Docker image:  `docker build --platform linux/amd-64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client .`
+3. Build the Docker image:  `docker build --platform linux/amd64 -t <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client .`
 4. Push to GCP repo: `docker push <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client`
 5. Deploy to Cloud Run (with cli or web UI)
     ```
-    gcloud run deploy yt-web-client --image <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client \
+    gcloud run deploy rt-web-client --image <REGION>-docker.pkg.dev/<PROJECT_ID>/rt-web-client-repo/rt-web-client \
     --region=<REGION> \
     --platform managed \
     --timeout=3600 \
