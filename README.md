@@ -2,6 +2,9 @@
 Full online video service with account login, video upload, video processing, video watching, built with GCP. \
 Other framework or tool used: ffmpeg, ExpressJS, NextJS.
 
+## Demo
+[Web-Client-Demo.md](./demo/Web-Client-Demo.md)
+
 ## Requirements
 Docker \
 Initialized Google Cloud project \

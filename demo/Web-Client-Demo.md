@@ -16,6 +16,7 @@ The bright appearance in the screenshots of the videos is due to the HDR sources
 7. Upload scenarios
     - Upload Successfully: <br/>
     Give success message and return the user to the home page
+    ![upload success alert](./screenshots/upload-success.png)
     - Upload Unsuccessful: <br/>
     Give error message and return the user to the home page
     - Upload without login:
